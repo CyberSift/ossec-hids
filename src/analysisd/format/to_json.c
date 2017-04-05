@@ -13,6 +13,7 @@
 #include "rules.h"
 #include "cJSON.h"
 #include "config.h"
+#include "time.h"
 
 
 /* Convert Eventinfo to json */
@@ -38,12 +39,15 @@ char *Eventinfo_to_jsonstr(const Eventinfo *lf)
     if ( lf->time ) {
 
         char alert_id[19];
+        double timestamp_ms;
+        timestamp_ms = ((double)time(lf->time))*1000
         alert_id[18] = '\0';
         if((snprintf(alert_id, 18, "%ld.%ld", (long int)lf->time, __crt_ftell)) < 0) {
             merror("snprintf failed");
         }
 
         cJSON_AddStringToObject(root, "id", alert_id);
+        cJSON_AddNumberToObject(root, "timestamp", timestamp_ms);
     }
 
     if (lf->generated_rule->comment) {
